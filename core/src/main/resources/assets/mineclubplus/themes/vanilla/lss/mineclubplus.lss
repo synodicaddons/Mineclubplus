@@ -1,0 +1,1734 @@
+/*
+ * MineClub+ dashboard.
+ *
+ * The shell pins every region to the window edges with left/top/right/bottom, so the layout is
+ * final on the first frame instead of settling over several. Only lists (cards, rows, the grid)
+ * size themselves from their content, and they never nest more than two deep.
+ *
+ * Palette
+ *   window    rgba(12, 13, 15, 242)
+ *   surface   rgba(255, 255, 255, 10)
+ *   line      rgba(255, 255, 255, 20)
+ *   text      rgb(236, 238, 240)
+ *   muted     rgb(138, 145, 153)
+ *   accent    rgb(245, 179, 1)
+ *   positive  rgb(63, 207, 142)
+ *   negative  rgb(242, 84, 91)
+ *
+ * Shell metrics: header 26, sidebar 104.
+ */
+
+.mcp-window {
+  left: 50%;
+  top: 50%;
+  alignment-x: center;
+  alignment-y: center;
+
+  width: 96%;
+  max-width: 620;
+  height: 94%;
+  max-height: 340;
+
+  background-color: rgba(12, 13, 15, 242);
+  border-color: rgba(255, 255, 255, 20);
+  border-thickness: 1;
+  border-radius: 12;
+  border-softness: 0.5;
+  filter: blur(30);
+
+  Component {
+    text-color: rgb(236, 238, 240);
+    shadow: false;
+    font-size: 0.8;
+    max-lines: 1;
+  }
+
+  Button {
+    filter: blur(0);
+    height: 15;
+    border-radius: 4;
+    border-thickness: 1;
+    border-color: rgba(255, 255, 255, 24);
+    background-color: rgba(255, 255, 255, 12);
+
+    Component {
+      font-size: 0.7;
+      text-color: rgb(216, 220, 224);
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 26);
+    }
+  }
+}
+
+/* The window without its backdrop: same box, same content, only the plate behind it is gone.
+   The rule sits after `.mcp-window` because two rules of equal weight are decided by file order;
+   before it, the window's own background would win and the setting would look broken. */
+.mcp-window-clear {
+  background-color: rgba(0, 0, 0, 0);
+  border-color: rgba(255, 255, 255, 40);
+  filter: blur(0);
+}
+
+.mcp-divider {
+  background-color: rgba(255, 255, 255, 16);
+}
+
+.mcp-divider-sidebar {
+  left: 104;
+  top: 27;
+  bottom: 0;
+  width: 1;
+}
+
+/* --------------------------------------------------------------------------- header --------- */
+
+.mcp-header {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 26;
+}
+
+.mcp-header-left {
+  left: 10;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  height: 14;
+  layout: stack;
+  space-between-entries: 5;
+}
+
+.mcp-brand {
+  font-size: 0.85;
+}
+
+.mcp-breadcrumb {
+  font-size: 0.7;
+  text-color: rgb(120, 126, 133);
+  margin-left: 4;
+}
+
+/* Right-hand side, pinned edge first: close 5 from the edge, then refresh, rule, version. */
+.mcp-close {
+  right: 5;
+}
+
+.mcp-refresh {
+  right: 23;
+}
+
+.mcp-header-button {
+  top: 50%;
+  alignment-y: center;
+  width: 15;
+  height: 15;
+  padding: 0;
+  alignment: center;
+
+  /* LabyMod dims button icons to 12% unless the button is a primary one. */
+  Icon {
+    height: 50%;
+    width: height;
+    opacity: 1.0;
+  }
+}
+
+.mcp-header-separator {
+  right: 42;
+  top: 50%;
+  alignment-y: center;
+  width: 1;
+  height: 11;
+  background-color: rgba(255, 255, 255, 30);
+}
+
+.mcp-version {
+  right: 50;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.65;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-divider-header {
+  left: 0;
+  right: 0;
+  top: 26;
+  height: 1;
+}
+
+/* -------------------------------------------------------------------------- sidebar --------- */
+
+.mcp-sidebar {
+  left: 0;
+  top: 27;
+  bottom: 0;
+  width: 104;
+
+  /* The lists inset themselves below rather than the sidebar padding them: a list anchored with
+     left/right measures the padded box differently than the box it is anchored to, which let the
+     active row grow past the divider. A stencil keeps anything else from bleeding out too. */
+  stencil: true;
+}
+
+.mcp-sidebar-top {
+  left: 8;
+  right: 9;
+  top: 8;
+  height: fit-content;
+  space-between-entries: 3;
+}
+
+/* Clears the rounded corner the same way the content does. */
+.mcp-sidebar-bottom {
+  left: 8;
+  right: 9;
+  bottom: 12;
+  height: fit-content;
+  space-between-entries: 3;
+}
+
+.mcp-sidebar-label {
+  font-size: 0.6;
+  text-color: rgb(104, 110, 117);
+  margin-bottom: 5;
+}
+
+.mcp-nav {
+  width: 100%;
+  height: 17;
+  border-radius: 5;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 14);
+  }
+}
+
+.mcp-nav-active {
+  background-color: rgba(245, 179, 1, 26);
+  border-color: rgba(245, 179, 1, 70);
+  border-thickness: 1;
+}
+
+.mcp-nav-active .mcp-nav-label {
+  text-color: rgb(245, 246, 247);
+  scale-to-fit: true;
+}
+
+.mcp-nav-icon {
+  left: 6;
+  top: 50%;
+  alignment-y: center;
+  width: 11;
+  height: 11;
+  color: rgb(150, 157, 164);
+
+  /* The source is 64px for an 11 unit icon, so it has to be filtered down, not point sampled. */
+  blurry: true;
+}
+
+.mcp-nav:hover .mcp-nav-icon {
+  color: rgb(214, 219, 224);
+}
+
+.mcp-nav-active .mcp-nav-icon {
+  color: rgb(245, 179, 1);
+}
+
+.mcp-nav-label {
+  left: 21;
+  right: 7;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.7;
+  text-color: rgb(176, 182, 189);
+}
+
+.mcp-player-card {
+  width: 100%;
+
+  /* 22 was just too low: the name and the rank pill could not stack without touching, so the
+     card carries the height of both plus the gap between them. The sidebar footer is
+     fit-content, so the card grows upwards and pushes nothing out. */
+  height: 28;
+  border-radius: 6;
+  background-color: rgba(255, 255, 255, 10);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 20);
+  }
+}
+
+.mcp-player-avatar {
+  left: 4;
+  top: 50%;
+  alignment-y: center;
+  width: 15;
+  height: 15;
+  border-radius: 3;
+
+  /* A tile behind the skin, so the card reads the same while the texture is still loading. */
+  background-color: rgba(255, 255, 255, 22);
+}
+
+.mcp-player-name {
+  left: 24;
+  right: 4;
+  top: 4;
+  font-size: 0.7;
+  scale-to-fit: true;
+}
+
+/* Space above and below the pill; without it the rank sat against the name and the card
+   edge. */
+.mcp-player-rank {
+  left: 24;
+  bottom: 4;
+  padding: 2 6 2 6;
+  box-sizing: border-box;
+  border-radius: 5;
+  font-size: 0.55;
+}
+
+/* -------------------------------------------------------------------------- content --------- */
+
+.mcp-content {
+  left: 105;
+  right: 0;
+  top: 27;
+  bottom: 0;
+
+  /* The bottom inset clears the window's 12 border-radius. With the status bar gone the content
+     reaches the frame itself, and anything a scroll cuts off at its floor -- half a card, half a
+     row -- landed inside the rounded corner and read as falling out of the window. */
+  padding: 11 10 14 11;
+}
+
+.mcp-scroll {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  scroll-speed: 16;
+  stencil: true;
+
+  /* Clips with a scissor rather than the stencil buffer. This clips widgets -- backgrounds,
+     borders, text -- but NOT rendered item blocks: Minecraft flushes those in a pass of its own,
+     after the scissor has been popped. Tested by putting real blocks in a scrolling holdings
+     list: they drew past the card, past the window and over LabyMod's footer. So anything that
+     scrolls shows a colour chip instead, and only the pinned layouts render real items. */
+  stencil-translation: true;
+
+  Scrollbar {
+    width: 2;
+    padding: 0 0 0 2;
+  }
+}
+
+.mcp-page {
+  width: 100%;
+  height: fit-content;
+  space-between-entries: 11;
+}
+
+/* A page that pages instead of scrolling.
+   `.mcp-page` takes its bounds from the scroll area it normally sits in, and without one it
+   lands outside the window. This sets them itself, so an unscrolled page fills the content
+   box. */
+.mcp-paged {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+/* The content above the arrows. It ends where they begin, so one row too many is clipped
+   inside the area instead of drawn past the window. */
+.mcp-paged-body {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 20;
+  space-between-entries: 11;
+}
+
+/* The way back out of an opened recipe. Same place as the arrows, because it does the same
+   thing: it steps back. */
+.mcp-paged-back {
+  left: 50%;
+  bottom: 0;
+  alignment-x: center;
+  width: 140;
+  height: 18;
+}
+
+.mcp-paged-pager {
+  left: 50%;
+  bottom: 0;
+  alignment-x: center;
+}
+
+/* The shelf along the bottom of the reference page: one row of tiles with the arrows below.
+   The height lives here rather than in the content, because the tiles render real blocks: an
+   area sized by its content could grow past the window, and nothing can clip a block. */
+.mcp-shelf {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 108;
+}
+
+.mcp-shelf-card {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 88;
+
+  /* Padding counts inside the height, or the last row sits below the card edge -- and a tile
+     renders a real block, which nothing can clip. */
+  box-sizing: border-box;
+}
+
+/* What scrolls above the shelf. It ends where the shelf begins. */
+.mcp-shelf-above {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 119;
+}
+
+/* The machine card is pinned to the top so its tiles can render real blocks. The height lives
+   here rather than in the content: a self sizing card could grow down over the shelf. */
+.mcp-machines {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 102;
+  box-sizing: border-box;
+}
+
+/* The shop amount stepper: minus, the amount, plus -- with the fixed amounts below it. */
+.mcp-stepper {
+  left: 50%;
+  alignment-x: center;
+  width: fit-content;
+  height: 16;
+  layout: stack;
+  space-between-entries: 4;
+  margin-top: 2;
+}
+
+.mcp-stepper-button {
+  width: 16;
+  height: 14;
+}
+
+.mcp-stepper-value {
+  width: 40;
+  alignment-x: center;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.7;
+}
+
+.mcp-stepper-quick {
+  width: 24;
+  height: 14;
+}
+
+/* ---------------------------------------------------------------------------- cards --------- */
+
+.mcp-card {
+  width: 100%;
+  height: fit-content;
+  padding: 8;
+  space-between-entries: 4;
+  border-radius: 8;
+  background-color: rgba(255, 255, 255, 10);
+  border-color: rgba(255, 255, 255, 16);
+  border-thickness: 1;
+}
+
+.mcp-card-title {
+  font-size: 0.7;
+  text-color: rgb(168, 175, 182);
+  margin-bottom: 3;
+}
+
+.mcp-row {
+  width: 100%;
+  height: 12;
+}
+
+.mcp-row-label {
+  left: 0;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.65;
+  text-color: rgb(138, 145, 153);
+}
+
+.mcp-row-value {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  font-size: 0.65;
+}
+
+.mcp-positive {
+  text-color: rgb(63, 207, 142) !important;
+}
+
+.mcp-negative {
+  text-color: rgb(242, 84, 91) !important;
+}
+
+.mcp-accent {
+  text-color: rgb(245, 179, 1) !important;
+}
+
+.mcp-chip {
+  height: 12;
+  padding: 3 6 3 6;
+  box-sizing: border-box;
+  border-radius: 6;
+  font-size: 0.52;
+  text-color: rgb(245, 179, 1);
+  background-color: rgba(245, 179, 1, 30);
+}
+
+/* ---------------------------------------------------------------------------- rangfarver --- */
+
+/* The panel's own role colours in dark mode, so a rank looks the same in game and on the site.
+   They sit after `.mcp-chip` deliberately: two rules of equal weight are decided by file order,
+   and the chip's own gold would otherwise win over the rank colour. Unknown ranks keep gold. */
+
+.mcp-rank-default {
+  text-color: rgb(245, 179, 1);
+  background-color: rgba(245, 179, 1, 30);
+}
+
+.mcp-rank-admin {
+  text-color: rgb(243, 56, 65);
+  background-color: rgba(243, 56, 65, 30);
+}
+
+.mcp-rank-udvikler {
+  text-color: rgb(47, 128, 251);
+  background-color: rgba(47, 128, 251, 30);
+}
+
+.mcp-rank-mod {
+  text-color: rgb(251, 111, 0);
+  background-color: rgba(251, 111, 0, 30);
+}
+
+.mcp-rank-supporter {
+  text-color: rgb(252, 235, 13);
+  background-color: rgba(252, 235, 13, 30);
+}
+
+.mcp-rank-bygger {
+  text-color: rgb(42, 207, 6);
+  background-color: rgba(42, 207, 6, 30);
+}
+
+.mcp-rank-vip {
+  text-color: rgb(49, 220, 187);
+  background-color: rgba(49, 220, 187, 30);
+}
+
+
+/* --------------------------------------------------------------------------- tilstande ----- */
+
+/* The message shown when there is nothing to show. It sets its own edges: without them it has
+   no bounds and is drawn outside the window, since it otherwise borrows them from the scroll
+   area. */
+.mcp-state {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-state-text {
+  left: 50%;
+  top: 44%;
+  alignment-x: center;
+  font-size: 0.72;
+  scale-to-fit: true;
+}
+
+.mcp-state-quiet {
+  text-color: rgb(120, 126, 133);
+}
+
+/* Light red: clear enough to show something went wrong, without shouting at someone who
+   briefly lost their connection. */
+.mcp-state-failed {
+  text-color: rgb(255, 122, 122);
+}
+
+.mcp-state-button {
+  left: 50%;
+  top: 54%;
+  alignment-x: center;
+  width: 110;
+  height: 18;
+}
+
+.mcp-placeholder-text {
+  width: 100%;
+  font-size: 0.65;
+  text-color: rgb(120, 126, 133);
+  max-lines: 2;
+}
+
+.mcp-placeholder-hint {
+  width: 100%;
+  font-size: 0.58;
+  text-color: rgb(96, 102, 109);
+}
+
+/* ----------------------------------------------------------------------- stat tiles --------- */
+
+.mcp-stat-row {
+  width: 100%;
+  height: 50;
+  layout: fill;
+  space-between-entries: 11;
+}
+
+.mcp-stat {
+  height: 50;
+  border-radius: 8;
+  background-color: rgba(255, 255, 255, 10);
+  border-color: rgba(255, 255, 255, 16);
+  border-thickness: 1;
+}
+
+.mcp-stat-caption {
+  left: 9;
+  top: 8;
+  font-size: 0.52;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-stat-value {
+  left: 9;
+  top: 17;
+  font-size: 1.05;
+  text-color: rgb(245, 179, 1);
+
+  /* Three tiles share the left column, so each is about 66 wide at the narrowest. A seven figure
+     balance does not fit that; shrink rather than clip. */
+  scale-to-fit: true;
+}
+
+.mcp-stat-delta {
+  left: 9;
+  bottom: 8;
+  font-size: 0.55;
+  text-color: rgb(138, 145, 153);
+}
+
+/* The transporter tile trades the change figure for a bar, on the same baselines. */
+/* ---------------------------------------------------------------------- progress bars ------- */
+
+/* The track. The fill is a stretched gradient strip -- see BarWidget. */
+.mcp-bar {
+  width: 100%;
+  height: 4;
+  border-radius: 2;
+  background-color: rgba(255, 255, 255, 18);
+  margin-top: 2;
+
+  .fill {
+    border-radius: 2;
+    object-fit: fill;
+    blurry: true;
+  }
+}
+
+.mcp-skill-bar {
+  height: 4;
+  margin-top: 1;
+}
+
+/* -------------------------------------------------------------------------- overview -------- */
+
+.mcp-overview {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-overview-main {
+  left: 0;
+  right: 30%;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-overview-stats {
+  left: 0;
+  right: 0;
+  top: 68;
+}
+
+/* Fills whatever is left under the two cards above; the row count is computed to match. The
+   padding has to count inside the height, or the card would reach past the bottom edge. */
+.mcp-holdings-card {
+  left: 0;
+  right: 0;
+  top: 132;
+  bottom: 0;
+  box-sizing: border-box;
+}
+
+.mcp-overview-rail-scroll {
+  left: 72%;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-overview-rail {
+  width: 100%;
+  height: fit-content;
+  space-between-entries: 11;
+}
+
+.mcp-welcome {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 54;
+
+  /* Places its contents by edge, so it wants neither the card padding nor the padding added on
+     top of its height. */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.mcp-welcome-avatar {
+  left: 9;
+  top: 50%;
+  alignment-y: center;
+  width: 32;
+  height: 32;
+  border-radius: 6;
+  border-color: rgba(255, 255, 255, 26);
+  border-thickness: 1;
+  background-color: rgba(255, 255, 255, 18);
+}
+
+.mcp-welcome-caption {
+  left: 50;
+  top: 10;
+  font-size: 0.55;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-welcome-name {
+  left: 50;
+  top: 19;
+  font-size: 1.05;
+
+  /* The overview keeps two columns down to a 440 window, where the left column leaves about 85
+     for the name -- a 16 character one wants more. Shrink rather than clip. */
+  scale-to-fit: true;
+}
+
+.mcp-welcome-meta {
+  left: 50;
+  bottom: 9;
+  width: fit-content;
+  height: 12;
+  layout: stack;
+  space-between-entries: 7;
+}
+
+.mcp-welcome-detail {
+  font-size: 0.55;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-welcome-button {
+  right: 7;
+  top: 50%;
+  alignment-y: center;
+  width: 78;
+
+  Component {
+    scale-to-fit: true;
+  }
+}
+
+.mcp-accent-button {
+  padding: 0 7 0 7;
+  background-color: rgba(245, 179, 1, 220) !important;
+  border-color: rgb(245, 179, 1) !important;
+
+  Component {
+    text-color: rgb(24, 20, 6) !important;
+  }
+
+  &:hover {
+    background-color: rgb(245, 179, 1) !important;
+  }
+}
+
+.mcp-ghost-button {
+  width: fit-content;
+  padding: 0 7 0 7;
+}
+
+.mcp-holding {
+  width: 100%;
+  height: 24;
+}
+
+.mcp-holding-icon {
+  left: 1;
+  top: 50%;
+  alignment-y: center;
+  width: 16;
+  height: 16;
+  border-radius: 3;
+}
+
+.mcp-holding-name {
+  left: 23;
+  right: 108;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.65;
+  scale-to-fit: true;
+}
+
+.mcp-holding-value {
+  right: 42;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  font-size: 0.65;
+}
+
+.mcp-holding-change {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  font-size: 0.6;
+}
+
+.mcp-transaction {
+  width: 100%;
+  height: 15;
+}
+
+.mcp-transaction-time {
+  left: 0;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.58;
+  text-color: rgb(104, 110, 117);
+}
+
+.mcp-transaction-label {
+  left: 24;
+  width: 46%;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.65;
+}
+
+/* The rail has no room for a time column. */
+.mcp-transaction-compact .mcp-transaction-label {
+  left: 0;
+  width: 58%;
+}
+
+.mcp-transaction-amount {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  font-size: 0.65;
+}
+
+.mcp-transaction-compact .mcp-transaction-amount,
+.mcp-transaction-compact .mcp-transaction-label {
+  font-size: 0.58;
+}
+
+.mcp-server-host {
+  font-size: 0.65;
+  text-color: rgb(63, 207, 142);
+}
+
+.mcp-quick {
+  width: 100%;
+  height: 23;
+  border-radius: 5;
+  background-color: rgba(255, 255, 255, 8);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 20);
+  }
+}
+
+.mcp-quick-command {
+  left: 5;
+  right: 5;
+  top: 4;
+  font-size: 0.62;
+  text-color: rgb(245, 179, 1);
+
+  /* The rail is about 88 wide at the narrowest, and "/transporter putall" wants more than the
+     62 that leaves. The description below has done this all along. */
+  scale-to-fit: true;
+}
+
+.mcp-quick-description {
+  left: 5;
+  right: 5;
+  bottom: 4;
+  font-size: 0.52;
+  text-color: rgb(120, 126, 133);
+  scale-to-fit: true;
+}
+
+/* ------------------------------------------------------------------------ transporter ------- */
+
+.mcp-transporter {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-page-header {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 22;
+}
+
+.mcp-page-title {
+  left: 0;
+  top: 0;
+  font-size: 0.95;
+}
+
+.mcp-page-subtitle {
+  left: 0;
+  bottom: 1;
+  font-size: 0.55;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-page-actions {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  height: 15;
+  layout: stack;
+  space-between-entries: 4;
+}
+
+.mcp-search {
+  width: 104;
+  height: 15;
+  font-size: 0.62;
+  border-radius: 5;
+  background-color: rgba(0, 0, 0, 120);
+  clear-button: true;
+}
+
+.mcp-filters {
+  left: 0;
+  right: 0;
+  top: 28;
+  height: 19;
+}
+
+.mcp-chips {
+  left: 0;
+  right: 106;
+  top: 50%;
+  alignment-y: center;
+  height: 15;
+  layout: stack;
+  space-between-entries: 4;
+}
+
+.mcp-filter-chip {
+  height: 15;
+  padding: 4 6 4 6;
+  box-sizing: border-box;
+  alignment-x: center;
+  border-radius: 7;
+  font-size: 0.6;
+  text-color: rgb(138, 145, 153);
+  background-color: rgba(255, 255, 255, 10);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 22);
+  }
+}
+
+.mcp-filter-chip-active {
+  background-color: rgba(245, 179, 1, 40);
+  text-color: rgb(245, 179, 1) !important;
+}
+
+/* Same pill as the capacity strip above, so the two rows read as a pair. */
+.mcp-filters-total {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+  width: 104;
+  height: 18;
+  border-radius: 6;
+  background-color: rgba(255, 255, 255, 10);
+}
+
+.mcp-filters-label {
+  left: 8;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.5;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-filters-value {
+  right: 8;
+  top: 50%;
+  alignment-y: center;
+  width: fit-content;
+  font-size: 0.62;
+  text-color: rgb(245, 179, 1);
+}
+
+/* Stacked, the grid is pinned to the floor so its tiles can draw real item blocks -- a scrolled
+   block cannot be clipped. One exact height per row count rather than a percentage, because a
+   52 tall tile would leave most of a row wasted at some window sizes. These must agree with
+   Layout#stackedGridHeight. */
+.mcp-grid-pinned {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  space-between-entries: 5;
+}
+
+.mcp-grid-pinned-1 {
+  height: 73;
+}
+
+.mcp-grid-pinned-2 {
+  height: 130;
+}
+
+.mcp-grid-pinned-3 {
+  height: 187;
+}
+
+/* A list: the grid, then the pager. They used to be pinned to opposite edges of a box, which
+   let one row too many draw its tiles straight over the pager. */
+.mcp-grid-area {
+  left: 0;
+  right: 29%;
+  top: 50;
+  bottom: 0;
+  space-between-entries: 5;
+}
+
+.mcp-grid {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: fit-content;
+  space-between-entries: 5;
+}
+
+.mcp-grid-row {
+  left: 50%;
+  alignment-x: center;
+  width: fit-content;
+  height: 52;
+  layout: stack;
+  space-between-entries: 5;
+}
+
+/* A fixed tile width on purpose: a tile stretched by the row only learns its width once the row
+   lays out, and by then the name has already decided not to wrap. The column count carries the
+   responsive part instead -- see TransporterPage#columnsThatFit. */
+.mcp-tile {
+  width: 56;
+  height: 52;
+  border-radius: 6;
+  background-color: rgba(255, 255, 255, 10);
+  border-color: rgba(255, 255, 255, 14);
+  border-thickness: 1;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 22);
+  }
+}
+
+/* Keeps the last, partly filled row the same tile size as the rows above it. */
+.mcp-tile-filler {
+  width: 56;
+  height: 52;
+}
+
+.mcp-tile-selected {
+  border-color: rgb(245, 179, 1);
+  background-color: rgba(245, 179, 1, 26);
+}
+
+/* The chip that stands in for an item this version does not have, and the padlock over it. The
+   chip keeps the item's own colour, so a row of them still reads as different things. */
+.mcp-locked {
+  border-radius: 3;
+}
+
+.mcp-lock {
+  left: 50%;
+  top: 50%;
+  alignment-x: center;
+  alignment-y: center;
+  width: 9;
+  height: 9;
+  color: rgba(255, 255, 255, 235);
+
+  /* The source is 64px for a 9 unit icon, so it has to be filtered down. */
+  blurry: true;
+}
+
+.mcp-tile-amount {
+  left: 3;
+  right: 3;
+  top: 3;
+  alignment-x: right;
+  font-size: 0.55;
+  text-color: rgb(176, 182, 189);
+}
+
+/* The ItemStack renderer always draws 16x16 around the widget centre, so the box has to be
+   exactly that -- it does not scale to a smaller one. Only the position moves, and it centres
+   the same way the holding and detail icons do rather than hanging from a fixed top. */
+.mcp-tile-icon {
+  left: 50%;
+  top: 50%;
+  alignment-x: center;
+  alignment-y: center;
+  width: 16;
+  height: 16;
+}
+
+.mcp-tile-name {
+  left: 50%;
+  bottom: 3;
+  width: 52;
+  alignment-x: center;
+  font-size: 0.5;
+  text-color: rgb(150, 156, 163);
+  line-spacing: 1;
+}
+
+.mcp-change {
+  width: fit-content;
+  font-size: 0.65;
+}
+
+.mcp-pager {
+  left: 50%;
+  alignment-x: center;
+  width: fit-content;
+  height: 16;
+  layout: stack;
+  space-between-entries: 7;
+}
+
+.mcp-pager-button {
+  width: 14;
+  height: 14;
+}
+
+.mcp-pager-label {
+  font-size: 0.58;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-details-column {
+  left: 72%;
+  right: 0;
+  top: 50;
+  bottom: 0;
+  box-sizing: border-box;
+  border-radius: 8;
+  background-color: rgba(255, 255, 255, 10);
+  border-color: rgba(255, 255, 255, 16);
+  border-thickness: 1;
+}
+
+.mcp-details-head {
+  left: 8;
+  right: 8;
+  top: 6;
+  height: 30;
+}
+
+/* Fills the column; the two variants below only move its top edge past the head. */
+.mcp-details-scroll {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.mcp-details-scroll-below-head {
+  top: 38;
+}
+
+.mcp-details-scroll-full {
+  top: 6;
+}
+
+.mcp-details {
+  width: 100%;
+  height: fit-content;
+  padding: 0 8 8 8;
+  space-between-entries: 4;
+}
+
+.mcp-details-icon {
+  left: 0;
+  top: 50%;
+  alignment-y: center;
+  width: 16;
+  height: 16;
+}
+
+.mcp-details-name {
+  left: 22;
+  top: 50%;
+  alignment-y: center;
+  width: 96;
+  line-spacing: 1;
+  font-size: 0.8;
+}
+
+.mcp-details-action-label {
+  margin-top: 3;
+  font-size: 0.55;
+  text-color: rgb(120, 126, 133);
+}
+
+.mcp-details-button {
+  width: 100%;
+  height: 17;
+}
+
+/* ----------------------------------------------------------------------- off network ------- */
+
+/* Shown instead of every data page when a released client is not on MineClub. Three lines
+   centred on the content box -- percentages, so it stays centred at any window size. */
+
+.mcp-blocker {
+  left: 0;
+  right: 0;
+  top: 27;
+  bottom: 0;
+  padding: 11 10 14 11;
+}
+
+.mcp-offnetwork {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-offnetwork-title {
+  left: 50%;
+  top: 38%;
+  alignment-x: center;
+  font-size: 1.0;
+  scale-to-fit: true;
+}
+
+.mcp-offnetwork-address {
+  left: 50%;
+  top: 50%;
+  alignment-x: center;
+  font-size: 1.25;
+  text-color: rgb(245, 179, 1);
+}
+
+.mcp-offnetwork-hint {
+  left: 50%;
+  top: 64%;
+  alignment-x: center;
+  font-size: 0.6;
+  text-color: rgb(120, 126, 133);
+  scale-to-fit: true;
+}
+
+.mcp-offnetwork-connect {
+  left: 50%;
+  top: 74%;
+  alignment-x: center;
+  width: 150;
+  height: 20;
+}
+
+.mcp-offnetwork-settings {
+  left: 50%;
+  top: 74%;
+  margin-top: 24;
+  alignment-x: center;
+  width: 150;
+  height: 18;
+}
+
+/* The custom amount field stands on its own without a label; the name used to sit on top of
+   the placeholder. Its metrics are the search field's, so the two inputs match, and the width
+   follows the buttons below it. */
+.mcp-details-amount {
+  width: 100%;
+  height: 15;
+  margin-top: 6;
+  font-size: 0.62;
+  border-radius: 5;
+  background-color: rgba(0, 0, 0, 120);
+}
+
+/* ----------------------------------------------------------------------------- log ---------- */
+
+/* One log row: time, image, text, counterparty and amount. The image is 16x16 because that is
+   the size the theme renders a real item at; a smaller box would clip the block. */
+.mcp-log-row {
+  width: 100%;
+  height: 18;
+}
+
+.mcp-log-time {
+  left: 0;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.55;
+  text-color: rgb(104, 110, 117);
+}
+
+.mcp-log-icon,
+.mcp-log-head {
+  left: 30;
+  top: 50%;
+  alignment-y: center;
+  width: 16;
+  height: 16;
+  border-radius: 3;
+}
+
+.mcp-log-text {
+  left: 52;
+  right: 150;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.62;
+  scale-to-fit: true;
+}
+
+.mcp-log-player {
+  right: 70;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.58;
+  text-color: rgb(150, 156, 163);
+  scale-to-fit: true;
+}
+
+.mcp-log-coins {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.62;
+}
+
+/* --------------------------------------------------------------------------- opskrift ------ */
+
+/* A 3x3 grid. The slots are placed one by one rather than sitting in a list: a list decides
+   the positions itself, and a pattern has to sit exactly where the recipe says. */
+.mcp-recipe {
+  width: 60;
+  height: 60;
+  margin-top: 4;
+  border-radius: 4;
+  background-color: rgba(0, 0, 0, 90);
+}
+
+.mcp-recipe-slot {
+  width: 16;
+  height: 16;
+  border-radius: 2;
+  background-color: rgba(255, 255, 255, 10);
+}
+
+.mcp-recipe-0-0 {
+  left: 2;
+  top: 2;
+}
+
+.mcp-recipe-0-1 {
+  left: 21;
+  top: 2;
+}
+
+.mcp-recipe-0-2 {
+  left: 40;
+  top: 2;
+}
+
+.mcp-recipe-1-0 {
+  left: 2;
+  top: 21;
+}
+
+.mcp-recipe-1-1 {
+  left: 21;
+  top: 21;
+}
+
+.mcp-recipe-1-2 {
+  left: 40;
+  top: 21;
+}
+
+.mcp-recipe-2-0 {
+  left: 2;
+  top: 40;
+}
+
+.mcp-recipe-2-1 {
+  left: 21;
+  top: 40;
+}
+
+.mcp-recipe-2-2 {
+  left: 40;
+  top: 40;
+}
+
+/* ------------------------------------------------------------------------- settings --------- */
+
+.mcp-field {
+  width: 100%;
+  height: 19;
+}
+
+.mcp-field-label {
+  left: 0;
+  right: 140;
+  top: 50%;
+  alignment-y: center;
+  font-size: 0.65;
+  text-color: rgb(138, 145, 153);
+}
+
+.mcp-field-value {
+  right: 0;
+  top: 50%;
+  alignment-y: center;
+}
+
+.mcp-input {
+  width: 92;
+  height: 15;
+  font-size: 0.62;
+  border-radius: 5;
+}
+
+.mcp-toggle {
+  width: 26;
+  height: 13;
+}
+
+.mcp-settings-button {
+  width: 100%;
+  height: 16;
+  margin-top: 4;
+}
+
+.mcp-legal-line {
+  width: 100%;
+  font-size: 0.58;
+  text-color: rgb(176, 182, 189);
+}
+
+.mcp-settings-hint {
+  margin-top: 3;
+  font-size: 0.55;
+  text-color: rgb(120, 126, 133);
+  max-lines: 3;
+}
+
+.mcp-period-chips {
+  right: 0;
+  height: 15;
+  layout: stack;
+  space-between-entries: 3;
+}
+
+/* ----------------------------------------------------------------- stacked layouts ------- */
+
+/* Stacked, the overview splits in two rather than becoming one long scroll. The holdings card
+   is pinned to the floor and everything else scrolls above it, because a holdings row draws a
+   real item block and Minecraft draws those after any scissor has been popped -- inside a scroll
+   they land outside the card and over whatever is below the window.
+
+   The 55/43 split is what makes the card work at every size: two rows in the smallest window a
+   client can produce, four in the largest. Layout#stackedHoldingRows mirrors the 55. */
+.mcp-overview-stacked {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mcp-overview-stacked-scroll {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 57%;
+}
+
+.mcp-overview-stacked-holdings {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+
+  /* The padding counts inside the height, or the last row would sit past the card edge. */
+  box-sizing: border-box;
+}
+
+.mcp-transporter-stacked {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+/* The scroll stops where the pinned grid starts, plus the gap between them. */
+.mcp-transporter-stacked-scroll {
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.mcp-transporter-stacked-scroll-1 {
+  bottom: 84;
+}
+
+.mcp-transporter-stacked-scroll-2 {
+  bottom: 141;
+}
+
+.mcp-transporter-stacked-scroll-3 {
+  bottom: 198;
+}
+
+/* These used to be @media blocks. They could not stay: a media query is resolved against the
+   Minecraft window (@media screen) or against the full-screen activity document (@media
+   document), and neither one is this window -- the window is 96% of the screen capped at 620, so
+   the two numbers drift apart as the GUI scale changes and the rules fired at the wrong size.
+   Layout measures the window instead and hangs the mode on .mcp-content as an id. */
+
+/* Stacked: the pages are one scrolling column, so the side panels take the full width. The top
+   goes with it -- both carry the offset that places them on the pinned page, and inside a list
+   that only pushes them down and leaves a gap above. */
+.mcp-stacked .mcp-filters {
+  top: 0;
+  right: 0;
+}
+
+.mcp-stacked .mcp-details-column,
+.mcp-stacked .mcp-details {
+  width: 100%;
+}
+
+.mcp-stacked .mcp-page-actions {
+  height: 14;
+}
+
+/* Eight pills do not fit beside the totals on a small window, so the totals step aside -- the
+   count is in the pager underneath anyway -- and the pills tighten up. */
+.mcp-tight .mcp-chips {
+  right: 0;
+  space-between-entries: 2;
+}
+
+.mcp-tight .mcp-filters-total {
+  visible: false;
+}
+
+.mcp-tight .mcp-filter-chip {
+  padding: 3 4 3 4;
+  font-size: 0.55;
+}
+
+/* ------------------------------------------------------------------- short windows ------- */
+
+/* A window too short for the pinned pages but wide enough to keep its two columns -- an
+   ultrawide at a high GUI scale, or a window dragged wide and flat. The columns stay, so the
+   holdings and the grid keep their rendered blocks; the vertical rhythm tightens instead.
+   Every offset below is mirrored in Layout, which counts the rows that fit between them. */
+
+.mcp-short .mcp-welcome {
+  height: 46;
+}
+
+.mcp-short .mcp-welcome-caption {
+  top: 7;
+}
+
+.mcp-short .mcp-welcome-name {
+  top: 15;
+}
+
+.mcp-short .mcp-welcome-meta {
+  bottom: 6;
+}
+
+.mcp-short .mcp-overview-stats {
+  top: 56;
+}
+
+.mcp-short .mcp-stat-row,
+.mcp-short .mcp-stat,
+.mcp-short .mcp-stat-capacity {
+  height: 42;
+}
+
+.mcp-short .mcp-stat-caption {
+  top: 6;
+}
+
+.mcp-short .mcp-stat-value {
+  top: 14;
+}
+
+.mcp-short .mcp-stat-delta {
+  bottom: 6;
+}
+
+.mcp-short .mcp-holdings-card {
+  top: 108;
+}
+
+/* The icon stays 16: the ItemStack renderer draws 16x16 around the widget centre whatever the
+   box says, so a shorter row has to come out of the padding, not out of the block -- and it
+   cannot come all the way out. At 20 the block had one pixel of clearance either side and any
+   rounding put it over the card edge, so the row keeps 3. */
+.mcp-short .mcp-holding {
+  height: 22;
+}
+
+.mcp-short .mcp-filters {
+  top: 24;
+  height: 17;
+}
+
+.mcp-short .mcp-filters-total {
+  height: 16;
+}
+
+.mcp-short .mcp-grid-area,
+.mcp-short .mcp-details-column {
+  top: 44;
+}
+
+.mcp-short .mcp-grid-row,
+.mcp-short .mcp-tile,
+.mcp-short .mcp-tile-filler {
+  height: 46;
+}
+
+/* The same shelf with the shorter tiles. The machine card is absent in a short window: the
+   machines are listed as text in the scroll instead, so the tiles keep the room to be whole. */
+.mcp-short .mcp-shelf {
+  height: 102;
+}
+
+.mcp-short .mcp-shelf-card {
+  height: 82;
+}
+
+.mcp-short .mcp-shelf-card {
+  height: 78;
+}
+
+.mcp-short .mcp-shelf-above {
+  bottom: 113;
+}
+
+.mcp-short .mcp-details-head {
+  height: 26;
+}
+
+.mcp-short .mcp-details-scroll-below-head {
+  top: 34;
+}
+
+/* ---------------------------------------------------------------- compact sidebar -------- */
+
+/* Below Layout's compact width the navigation keeps its icons and drops the labels. */
+.mcp-sidebar-compact {
+  width: 30;
+}
+
+.mcp-sidebar-compact .mcp-sidebar-top,
+.mcp-sidebar-compact .mcp-sidebar-bottom {
+  left: 5;
+  right: 5;
+}
+
+.mcp-sidebar-compact .mcp-nav-label,
+.mcp-sidebar-compact .mcp-sidebar-label,
+.mcp-sidebar-compact .mcp-player-name,
+.mcp-sidebar-compact .mcp-player-rank {
+  visible: false;
+}
+
+.mcp-sidebar-compact .mcp-nav-icon {
+  left: 50%;
+  alignment-x: center;
+}
+
+.mcp-sidebar-compact .mcp-player-avatar {
+  left: 50%;
+  alignment-x: center;
+}
+
+/* Name and rank are hidden here, so the card only needs room for the avatar. */
+.mcp-sidebar-compact .mcp-player-card {
+  height: 22;
+}
+
+.mcp-divider-sidebar-compact {
+  left: 30;
+}
+
+.mcp-content-compact {
+  left: 31;
+  padding: 9 8 12 9;
+}
