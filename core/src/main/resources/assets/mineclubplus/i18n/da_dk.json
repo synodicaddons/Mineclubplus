@@ -5,20 +5,7 @@
         "name": "Aktiveret",
         "description": "Slår MineClub+ til og fra."
       },
-      "header": {
-        "menu": {
-          "name": "Menu"
-        },
-        "data": {
-          "name": "Data"
-        },
-        "transporter": {
-          "name": "Transporter"
-        },
-        "quickTake": {
-          "name": "Genvejstast"
-        }
-      },
+      "menu": "Menu",
       "openMenuKey": {
         "name": "Åbn menu",
         "description": "Tasten der åbner MineClub+. Kan kun ændres her."
@@ -31,6 +18,7 @@
           "head": "Hoved"
         }
       },
+      "data": "Data",
       "refreshWhileOpen": {
         "name": "Opdatér automatisk",
         "description": "Henter nye data mens menuen er åben. Er den slået fra, hentes der kun ved åbning og med Opdatér."
@@ -39,6 +27,7 @@
         "name": "Opdateringsinterval",
         "description": "Sekunder mellem automatiske opdateringer."
       },
+      "transporter": "Transporter",
       "confirmTransporterActions": {
         "name": "Bekræft handlinger",
         "description": "Spørg før der sendes en transporter-kommando til serveren."
@@ -48,10 +37,11 @@
         "description": "Antal items som Hent til inventar bruger."
       },
       "openDashboard": {
-        "name": "Åbn MineClub+",
-        "description": "Åbner vinduet herfra, for dem der hellere vil klikke end bruge genvejstasten.",
+        "name": "Oversigt",
+        "description": "Åbner MineClub+ vinduet.",
         "text": "Åbn MineClub+"
       },
+      "quickTake": "Genvejstast",
       "takeKey": {
         "name": "Tast til hent"
       },
@@ -70,5 +60,279 @@
       },
       "windowBackground": {
         "name": "Baggrund bag vinduet"
+      },
+      "header": {
+        "menu": {
+          "name": "Menu og genvejstast"
+        },
+        "data": {
+          "name": "Data og forbindelse"
+        },
+        "transporter": {
+          "name": "Transporter"
+        },
+        "quickTake": {
+          "name": "Hentegenvej"
+        }
       }
     },
+    "settingsPage": {
+      "menu": "Menu og genvej",
+      "data": "Data og forbindelse",
+      "transporter": "Transporter",
+      "hint": "Alle tal kommer fra api.mineclub.dk. Mangler et af dem, staar der eksempler i stedet.",
+      "about": "Om MineClub+"
+    },
+    "page": {
+      "overview": {
+        "title": "Oversigt",
+        "subtitle": "Dit overblik over MineClub"
+      },
+      "transporter": {
+        "title": "Transporter",
+        "subtitle": "Alt hvad du har med dig"
+      },
+      "economy": {
+        "title": "Økonomi",
+        "subtitle": "Mønter ind og ud"
+      },
+      "materials": {
+        "title": "Opslag",
+        "subtitle": "Maskiner og egne opskrifter"
+      },
+      "statistics": {
+        "title": "Statistik",
+        "subtitle": "Spilletid, evner og beholdning"
+      },
+      "settings": {
+        "title": "Indstillinger",
+        "subtitle": "Tilpas MineClub+"
+      },
+      "logs": {
+        "title": "Log",
+        "subtitle": "Dine handler, overførsler og transporter"
+      },
+      "shop": {
+        "title": "Shop",
+        "subtitle": "Køb fra serverens shop"
+      }
+    },
+    "sidebar": {
+      "navigation": "NAVIGATION"
+    },
+    "action": {
+      "refresh": "Opdatér",
+      "close": "Luk",
+      "retry": "Prøv igen"
+    },
+    "offNetwork": {
+      "title": "Du er ikke på netværket",
+      "hint": "Forbind til serveren for at se dine egne tal",
+      "connect": "Forbind til serveren",
+      "settings": "Indstillinger"
+    },
+    "state": {
+      "loading": "Henter data ...",
+      "empty": "Ingen data endnu",
+      "offline": "Ikke forbundet",
+      "noMatches": "Ingen items matcher filteret",
+      "comingSoon": "Kommer snart",
+      "demo": "DEMO",
+      "preparing": "Henter dine tal ...",
+      "failed": "Kunne ikke hente dine tal",
+      "locked": "Findes ikke i %s. Varen er fra %s — hop på den version for at se den."
+    },
+    "category": {
+      "all": "Alle",
+      "mines": "Mining",
+      "farming": "Farming",
+      "wood": "Træ",
+      "mobs": "Mobs",
+      "tools": "Tools",
+      "machinery": "Maskineri",
+      "others": "Andet"
+    },
+    "overview": {
+      "welcome": "VELKOMMEN TILBAGE",
+      "openTransporter": "Åbn transporter",
+      "coins": "MØNTER",
+      "transporter": "TRANSPORTER",
+      "netWorth": "NETTOFORMUE",
+      "holdings": "Største beholdninger",
+      "activity": "Seneste aktivitet",
+      "server": "Server",
+      "playersOnline": "Spillere online",
+      "ping": "Ping",
+      "quickActions": "Hurtige kommandoer",
+      "today": "%s i dag"
+    },
+    "quick": {
+      "putall": {
+        "label": "Put alt ind",
+        "description": "Putter alt i transporteren"
+      },
+      "open": {
+        "label": "Åbn transporter",
+        "description": "Åbner transporter-menuen i spillet"
+      },
+      "list": {
+        "label": "Vis liste",
+        "description": "Viser indholdet i chatten"
+      },
+      "balance": {
+        "label": "Saldo",
+        "description": "Se din saldo"
+      }
+    },
+    "transporter": {
+      "subtitle": "%s forskellige items",
+      "searchPlaceholder": "Søg i transporter",
+      "sort": {
+        "value": "Værdi",
+        "amount": "Antal",
+        "name": "Navn"
+      },
+      "putAll": "Put alt ind",
+      "totalValue": "SAMLET VÆRDI",
+      "selectHint": "Vælg et item for at se detaljer",
+      "amount": "Antal",
+      "stacks": "Stakke",
+      "unitValue": "Enhedspris",
+      "stackValue": "Samlet værdi",
+      "change24h": "24 t",
+      "category": "Kategori",
+      "take": "Henter %s stk",
+      "takeButton": "Hent til inventar",
+      "distribution": "Fordeling",
+      "openButton": "Åbn i spillet",
+      "pageOf": "Side %s af %s  ·  %s items",
+      "takeAllButton": "Hent alt",
+      "customAmount": "Eget antal",
+      "customPlaceholder": "Antal",
+      "takeCustomButton": "Hent dette antal",
+      "bindButton": "Sæt på genvejstast",
+      "unbindButton": "Fjern fra genvejstast",
+      "bindHint": "Tasten %s henter %s stk",
+      "bindNoKey": "Vælg en tast i indstillingerne — den henter %s stk"
+    },
+    "economy": {
+      "balance": "SALDO",
+      "earned": "TJENT",
+      "spent": "BRUGT",
+      "net": "NETTO",
+      "transactions": "Transaktioner",
+      "period": {
+        "day": "Dag",
+        "week": "Uge",
+        "month": "Måned",
+        "year": "År",
+        "all": "Alt"
+      },
+      "sold": "Solgt %s× %s",
+      "bought": "Købt %s× %s",
+      "from": "Fra %s",
+      "to": "Til %s",
+      "movement": "Bevægelse"
+    },
+    "statistics": {
+      "player": "Spiller",
+      "name": "Navn",
+      "rank": "Rang",
+      "playtime": "Spilletid",
+      "memberSince": "Medlem siden",
+      "transporter": "Transporter",
+      "distinctItems": "Forskellige items",
+      "totalItems": "Items i alt",
+      "totalValue": "Samlet værdi",
+      "skills": "mcMMO",
+      "powerLevel": "Power level"
+    },
+    "confirm": {
+      "putAll": "Vil du putte alt i transporteren?",
+      "take": "Hent %s x %s til dit inventar?",
+      "takeAll": "Hent alt %s til dit inventar?",
+      "buy": "Køb %s x %s for %s mønter?"
+    },
+    "command": {
+      "refreshing": "MineClub+ henter nye data ..."
+    },
+    "navigation": {
+      "name": "MineClub+"
+    },
+    "skill": {
+      "acrobatics": "Akrobatik",
+      "alchemy": "Alkymi",
+      "archery": "Bueskydning",
+      "axes": "Økser",
+      "crossbows": "Armbrøster",
+      "excavation": "Udgravning",
+      "fishing": "Fiskeri",
+      "herbalism": "Urtelære",
+      "maces": "Stridskøller",
+      "mining": "Minedrift",
+      "repair": "Reparation",
+      "salvage": "Bjærgning",
+      "smelting": "Smeltning",
+      "spears": "Spyd",
+      "swords": "Sværd",
+      "taming": "Tæmning",
+      "tridents": "Treforke",
+      "unarmed": "Næver",
+      "woodcutting": "Træfældning"
+    },
+    "logs": {
+      "title": "Seneste hændelser",
+      "empty": "Der er ikke sket noget endnu",
+      "coins": "mønter",
+      "action": {
+        "sold": "Solgt",
+        "bought": "Købt",
+        "sent": "Sendt",
+        "received": "Modtaget",
+        "add": "Lagt ind",
+        "remove": "Hentet ud"
+      }
+    },
+    "materials": {
+      "machines": "Maskiner",
+      "access": "Adgang til maskiner",
+      "empty": "Serveren har ikke sendt listen endnu",
+      "recipes": "Opskrifter",
+      "show": "Klik for at se mønstret",
+      "bought": "Maskiner har ingen opskrift — de købes med /maskinadgang. Prisen står til højre.",
+      "loose": "Rækkefølgen er ligegyldig i denne opskrift.",
+      "back": "Tilbage til listen",
+      "buy": "Åbn maskinshoppen",
+      "machineHint": "Maskiner købes, de craftes ikke. Adgang koster %s mønter — klik på en maskine for at købe den inde i spillet."
+    },
+    "legal": {
+      "copyright": "© %s Synodic Studio. Alle rettigheder forbeholdes.",
+      "terms": "MineClub+ må bruges personligt på MineClub. Kopiering, videredistribution, salg og ændring af addonet er ikke tilladt uden skriftlig tilladelse.",
+      "website": "synodicstudio.com"
+    },
+    "shop": {
+      "subtitle": "%s varer til salg",
+      "searchPlaceholder": "Søg i shoppen",
+      "balance": "Dine mønter",
+      "selectHint": "Vælg en vare for at købe den.",
+      "unitPrice": "Pris pr. stk.",
+      "signPrice": "Skilt",
+      "sellPrice": "Shoppen giver",
+      "total": "Du betaler",
+      "amount": "Antal",
+      "buy": "Køb",
+      "buyStack": "Køb en stak",
+      "empty": "Shoppen er ikke læst endnu. Prøv igen om et øjeblik.",
+      "each": "%s pr. stk."
+    },
+    "rank": {
+      "admin": "Admin",
+      "udvikler": "Udvikler",
+      "mod": "Moderator",
+      "supporter": "Supporter",
+      "bygger": "Bygger",
+      "vip": "VIP",
+      "default": "Spiller"
+    }
+  }
+}

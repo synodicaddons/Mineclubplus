@@ -5,20 +5,7 @@
         "name": "Enabled",
         "description": "Turns MineClub+ on and off."
       },
-      "header": {
-        "menu": {
-          "name": "Menu"
-        },
-        "data": {
-          "name": "Data"
-        },
-        "transporter": {
-          "name": "Transporter"
-        },
-        "quickTake": {
-          "name": "Hotkey"
-        }
-      },
+      "menu": "Menu",
       "openMenuKey": {
         "name": "Open menu",
         "description": "The key that opens MineClub+. This is the only place it can be changed."
@@ -31,6 +18,7 @@
           "head": "Head"
         }
       },
+      "data": "Data",
       "refreshWhileOpen": {
         "name": "Refresh automatically",
         "description": "Fetches new data while the menu is open. Off means only on open and on Refresh."
@@ -39,6 +27,7 @@
         "name": "Refresh interval",
         "description": "Seconds between automatic refreshes."
       },
+      "transporter": "Transporter",
       "confirmTransporterActions": {
         "name": "Confirm actions",
         "description": "Ask before sending a transporter command to the server."
@@ -48,10 +37,11 @@
         "description": "How many items Take to inventory requests."
       },
       "openDashboard": {
-        "name": "Open MineClub+",
-        "description": "Opens the window from here, for players who would rather click than use the hotkey.",
+        "name": "Dashboard",
+        "description": "Opens the MineClub+ window.",
         "text": "Open MineClub+"
       },
+      "quickTake": "Hotkey",
       "takeKey": {
         "name": "Take hotkey"
       },
@@ -70,5 +60,279 @@
       },
       "windowBackground": {
         "name": "Window background"
+      },
+      "header": {
+        "menu": {
+          "name": "Menu and hotkey"
+        },
+        "data": {
+          "name": "Data and connection"
+        },
+        "transporter": {
+          "name": "Transporter"
+        },
+        "quickTake": {
+          "name": "Take hotkey"
+        }
       }
     },
+    "settingsPage": {
+      "menu": "Menu and hotkey",
+      "data": "Data and connection",
+      "transporter": "Transporter",
+      "hint": "Every number comes from api.mineclub.dk. If one of them is missing, sample data stands in for it.",
+      "about": "About MineClub+"
+    },
+    "page": {
+      "overview": {
+        "title": "Overview",
+        "subtitle": "Your MineClub dashboard"
+      },
+      "transporter": {
+        "title": "Transporter",
+        "subtitle": "Everything you carry"
+      },
+      "economy": {
+        "title": "Economy",
+        "subtitle": "Coins in and out"
+      },
+      "materials": {
+        "title": "Reference",
+        "subtitle": "Machines and custom recipes"
+      },
+      "statistics": {
+        "title": "Statistics",
+        "subtitle": "Play time, skills and holdings"
+      },
+      "settings": {
+        "title": "Settings",
+        "subtitle": "Tune MineClub+"
+      },
+      "logs": {
+        "title": "Log",
+        "subtitle": "Your trades, transfers and transporter"
+      },
+      "shop": {
+        "title": "Shop",
+        "subtitle": "Buy from the server shop"
+      }
+    },
+    "sidebar": {
+      "navigation": "NAVIGATION"
+    },
+    "action": {
+      "refresh": "Refresh",
+      "close": "Close",
+      "retry": "Try again"
+    },
+    "offNetwork": {
+      "title": "You are not on the network",
+      "hint": "Connect to the server to see your own numbers",
+      "connect": "Connect to the server",
+      "settings": "Settings"
+    },
+    "state": {
+      "loading": "Loading data ...",
+      "empty": "No data yet",
+      "offline": "Not connected",
+      "noMatches": "No items match the filter",
+      "comingSoon": "Coming soon",
+      "demo": "DEMO",
+      "preparing": "Fetching your numbers ...",
+      "failed": "Could not load your data",
+      "locked": "Not in %s. This item is from %s -- join on that version to see it."
+    },
+    "category": {
+      "all": "All",
+      "mines": "Mining",
+      "farming": "Farming",
+      "wood": "Wood",
+      "mobs": "Mobs",
+      "tools": "Tools",
+      "machinery": "Machinery",
+      "others": "Other"
+    },
+    "overview": {
+      "welcome": "WELCOME BACK",
+      "openTransporter": "Open transporter",
+      "coins": "COINS",
+      "transporter": "TRANSPORTER",
+      "netWorth": "NET WORTH",
+      "holdings": "Largest holdings",
+      "activity": "Recent activity",
+      "server": "Server",
+      "playersOnline": "Players online",
+      "ping": "Ping",
+      "quickActions": "Quick commands",
+      "today": "%s today"
+    },
+    "quick": {
+      "putall": {
+        "label": "Store everything",
+        "description": "Puts everything into the transporter"
+      },
+      "open": {
+        "label": "Open transporter",
+        "description": "Opens the in-game transporter menu"
+      },
+      "list": {
+        "label": "Show list",
+        "description": "Prints the contents in chat"
+      },
+      "balance": {
+        "label": "Balance",
+        "description": "Check your balance"
+      }
+    },
+    "transporter": {
+      "subtitle": "%s distinct items",
+      "searchPlaceholder": "Search transporter",
+      "sort": {
+        "value": "Value",
+        "amount": "Amount",
+        "name": "Name"
+      },
+      "putAll": "Store everything",
+      "totalValue": "TOTAL VALUE",
+      "selectHint": "Pick an item to see details",
+      "amount": "Amount",
+      "stacks": "Stacks",
+      "unitValue": "Unit price",
+      "stackValue": "Total value",
+      "change24h": "24 h",
+      "category": "Category",
+      "take": "Takes %s items",
+      "takeButton": "Take to inventory",
+      "distribution": "Distribution",
+      "openButton": "Open in game",
+      "pageOf": "Page %s of %s  ·  %s items",
+      "takeAllButton": "Take all",
+      "customAmount": "Custom amount",
+      "customPlaceholder": "Amount",
+      "takeCustomButton": "Take this many",
+      "bindButton": "Bind to hotkey",
+      "unbindButton": "Remove from hotkey",
+      "bindHint": "The %s key takes out %s",
+      "bindNoKey": "Pick a key in the settings — it takes out %s"
+    },
+    "economy": {
+      "balance": "BALANCE",
+      "earned": "EARNED",
+      "spent": "SPENT",
+      "net": "NET",
+      "transactions": "Transactions",
+      "period": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "year": "Year",
+        "all": "All"
+      },
+      "sold": "Sold %s× %s",
+      "bought": "Bought %s× %s",
+      "from": "From %s",
+      "to": "To %s",
+      "movement": "Transaction"
+    },
+    "statistics": {
+      "player": "Player",
+      "name": "Name",
+      "rank": "Rank",
+      "playtime": "Play time",
+      "memberSince": "Member since",
+      "transporter": "Transporter",
+      "distinctItems": "Distinct items",
+      "totalItems": "Total items",
+      "totalValue": "Total value",
+      "skills": "mcMMO",
+      "powerLevel": "Power level"
+    },
+    "confirm": {
+      "putAll": "Store everything in the transporter?",
+      "take": "Take %s x %s to your inventory?",
+      "takeAll": "Take all your %s into your inventory?",
+      "buy": "Buy %s x %s for %s coins?"
+    },
+    "command": {
+      "refreshing": "MineClub+ is fetching new data ..."
+    },
+    "navigation": {
+      "name": "MineClub+"
+    },
+    "skill": {
+      "acrobatics": "Acrobatics",
+      "alchemy": "Alchemy",
+      "archery": "Archery",
+      "axes": "Axes",
+      "crossbows": "Crossbows",
+      "excavation": "Excavation",
+      "fishing": "Fishing",
+      "herbalism": "Herbalism",
+      "maces": "Maces",
+      "mining": "Mining",
+      "repair": "Repair",
+      "salvage": "Salvage",
+      "smelting": "Smelting",
+      "spears": "Spears",
+      "swords": "Swords",
+      "taming": "Taming",
+      "tridents": "Tridents",
+      "unarmed": "Unarmed",
+      "woodcutting": "Woodcutting"
+    },
+    "logs": {
+      "title": "Recent events",
+      "empty": "Nothing has happened yet",
+      "coins": "coins",
+      "action": {
+        "sold": "Sold",
+        "bought": "Bought",
+        "sent": "Sent",
+        "received": "Received",
+        "add": "Stored",
+        "remove": "Taken out"
+      }
+    },
+    "materials": {
+      "machines": "Machines",
+      "access": "Access to machines",
+      "empty": "The server has not sent the list yet",
+      "recipes": "Recipes",
+      "show": "Click to see the pattern",
+      "bought": "Machines have no recipe — buy them with /maskinadgang. The price is on the right.",
+      "loose": "The order does not matter in this recipe.",
+      "back": "Back to the list",
+      "buy": "Open the machine shop",
+      "machineHint": "Machines are bought, not crafted. Access costs %s coins — click a machine to buy it in game."
+    },
+    "legal": {
+      "copyright": "© %s Synodic Studio. All rights reserved.",
+      "terms": "MineClub+ is licensed for personal use on MineClub. Copying, redistributing, selling or modifying the addon is not allowed without written permission.",
+      "website": "synodicstudio.com"
+    },
+    "shop": {
+      "subtitle": "%s items for sale",
+      "searchPlaceholder": "Search the shop",
+      "balance": "Your coins",
+      "selectHint": "Pick an item to buy it.",
+      "unitPrice": "Price each",
+      "signPrice": "Sign",
+      "sellPrice": "Shop pays",
+      "total": "You pay",
+      "amount": "Amount",
+      "buy": "Buy",
+      "buyStack": "Buy a stack",
+      "empty": "The shop has not been read yet. Try again in a moment.",
+      "each": "%s each"
+    },
+    "rank": {
+      "admin": "Admin",
+      "udvikler": "Developer",
+      "mod": "Moderator",
+      "supporter": "Supporter",
+      "bygger": "Builder",
+      "vip": "VIP",
+      "default": "Player"
+    }
+  }
+}
