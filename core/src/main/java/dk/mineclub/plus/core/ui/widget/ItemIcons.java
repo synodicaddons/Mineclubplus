@@ -1,9 +1,9 @@
 package dk.mineclub.plus.core.ui.widget;
 
 import dk.mineclub.plus.core.util.ItemColors;
+import dk.mineclub.plus.core.util.ItemIds;
 import dk.mineclub.plus.core.util.ItemVersions;
 import dk.mineclub.plus.core.util.Translations;
-import java.util.Locale;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
@@ -33,8 +33,6 @@ import org.jetbrains.annotations.Nullable;
  * around the widget centre and does not scale it to a smaller box.
  */
 public final class ItemIcons {
-
-  private static final String VANILLA = "minecraft";
 
   /** Drawn over the colour chip when a later version is what holds the item. */
   private static final Icon LOCK = Icon.texture(
@@ -111,22 +109,14 @@ public final class ItemIcons {
    * @return the vanilla stack, or {@code null} when this version has no such item
    */
   private static @Nullable ItemStack resolve(String itemId) {
-    String path = itemId.toLowerCase(Locale.ROOT).trim();
-    if (path.isEmpty()) {
+    ItemIds.ItemId id = ItemIds.parse(itemId);
+    if (id == null) {
       return null;
-    }
-
-    // A namespaced id from the server wins over the vanilla default.
-    String namespace = VANILLA;
-    int colon = path.indexOf(':');
-    if (colon > 0) {
-      namespace = path.substring(0, colon);
-      path = path.substring(colon + 1);
     }
 
     try {
       ItemStackFactory factory = Laby.references().itemStackFactory();
-      ItemStack stack = factory.create(namespace, path);
+      ItemStack stack = factory.create(id.namespace(), id.path());
       if (stack == null) {
         return null;
       }

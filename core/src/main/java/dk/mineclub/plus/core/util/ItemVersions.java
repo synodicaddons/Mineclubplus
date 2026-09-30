@@ -1,6 +1,5 @@
 package dk.mineclub.plus.core.util;
 
-import java.util.Locale;
 import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.client.world.item.VanillaItem;
 import net.labymod.api.client.world.item.VanillaItems;
@@ -21,8 +20,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class ItemVersions {
 
-  private static final String VANILLA = "minecraft";
-
   private ItemVersions() {
   }
 
@@ -33,19 +30,14 @@ public final class ItemVersions {
    *     can honestly be named
    */
   public static @Nullable MinecraftVersion requiredBy(@NotNull String itemId) {
-    String path = itemId.toLowerCase(Locale.ROOT).trim();
-    if (path.isEmpty()) {
+    // An id Minecraft would refuse must never reach ResourceLocation: it throws, and a throw
+    // here takes the window down with it.
+    ItemIds.ItemId id = ItemIds.parse(itemId);
+    if (id == null) {
       return null;
     }
 
-    String namespace = VANILLA;
-    int colon = path.indexOf(':');
-    if (colon > 0) {
-      namespace = path.substring(0, colon);
-      path = path.substring(colon + 1);
-    }
-
-    VanillaItem item = VanillaItems.findItem(ResourceLocation.create(namespace, path));
+    VanillaItem item = VanillaItems.findItem(ResourceLocation.create(id.namespace(), id.path()));
     if (item == null || item.isAvailable()) {
       return null;
     }
