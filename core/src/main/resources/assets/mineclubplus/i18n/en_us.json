@@ -138,6 +138,7 @@
       "noMatches": "No items match the filter",
       "comingSoon": "Coming soon",
       "demo": "DEMO",
+      "demoHint": "Your own figures could not be fetched, so these are examples. The client log says why.",
       "preparing": "Fetching your numbers ...",
       "failed": "Could not load your data",
       "locked": "Not in %s. This item is from %s -- join on that version to see it."

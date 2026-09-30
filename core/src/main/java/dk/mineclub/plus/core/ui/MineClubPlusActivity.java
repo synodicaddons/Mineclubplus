@@ -262,6 +262,16 @@ public class MineClubPlusActivity extends SimpleActivity {
     HorizontalListWidget left = Widgets.row("mcp-header-left");
     left.addEntry(Widgets.component(Brand.wordmark(), "mcp-brand"));
     left.addEntry(Widgets.i18n(this.page.titleKey(), "mcp-breadcrumb"));
+
+    // Sample numbers are only honest while they are marked as such. Without this the window
+    // shows an invented balance that reads exactly like a real one.
+    if (this.addon.api().hasSampleData()) {
+      Widget badge = Widgets.i18n("mineclubplus.state.demo", "mcp-demo-badge");
+      badge.setHoverComponent(Component.text(
+          Translations.get("mineclubplus.state.demoHint")));
+      left.addEntry(badge);
+    }
+
     header.addChild(left);
 
     // Pinned individually rather than lined up in a list: a list sizes itself to fit-content,

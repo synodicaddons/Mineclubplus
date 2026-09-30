@@ -4,7 +4,6 @@ import dk.mineclub.plus.core.MineClubPlusAddon;
 import dk.mineclub.plus.core.api.model.ClientChallengeResponse;
 import dk.mineclub.plus.core.api.model.ClientVerifyResponse;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import net.labymod.api.Laby;
@@ -41,6 +40,16 @@ public final class MineClubAuth {
   /** Back-off after a failed login, so an unreachable server is not hammered. */
   private static final long RETRY_DELAY_MILLIS = 60L * 1000L;
 
+  /**
+   * How long a login may be in flight before it is written off.
+   *
+   * <p>The three steps time out at 13 seconds each, so anything past this has stopped rather than
+   * slowed down. Without the deadline a step whose callback never arrives would leave
+   * {@link #authenticating} set for the rest of the session, and every later request would hand
+   * back no token without a word -- the window would then show sample numbers and never say why.
+   */
+  private static final long AUTH_TIMEOUT_MILLIS = 45L * 1000L;
+
   private final MineClubPlusAddon addon;
 
   private volatile String token;
@@ -49,6 +58,9 @@ public final class MineClubAuth {
 
   /** Set while a login is running, so two pages cannot log in separately. */
   private volatile boolean authenticating;
+
+  /** When the login in flight started, so one that never answers can be written off. */
+  private volatile long authenticatingSince;
 
   public MineClubAuth(@NotNull MineClubPlusAddon addon) {
     this.addon = addon;
@@ -75,7 +87,20 @@ public final class MineClubAuth {
       return;
     }
 
-    if (this.authenticating || System.currentTimeMillis() < this.nextAttemptAt) {
+    long now = System.currentTimeMillis();
+    if (this.authenticating) {
+      if (now - this.authenticatingSince < AUTH_TIMEOUT_MILLIS) {
+        consumer.accept(null);
+        return;
+      }
+
+      // The login stopped answering. Say so and start over rather than staying silent.
+      this.addon.logger().warn("MineClub-login svarede ikke inden for "
+          + (AUTH_TIMEOUT_MILLIS / 1000L) + " sekunder, prøver igen");
+      this.authenticating = false;
+    }
+
+    if (now < this.nextAttemptAt) {
       consumer.accept(null);
       return;
     }
@@ -94,6 +119,7 @@ public final class MineClubAuth {
     }
 
     this.authenticating = true;
+    this.authenticatingSince = now;
     this.challenge(session, accessToken, consumer);
   }
 
@@ -108,7 +134,7 @@ public final class MineClubAuth {
             body,
             null
         )
-        .execute(response -> {
+        .execute(response -> this.step("udfordringen", consumer, () -> {
           ClientChallengeResponse challenge = response.isPresent() ? response.get() : null;
           if (challenge == null || challenge.serverId() == null) {
             this.fail("api'en gav ingen udfordring (HTTP " + response.getStatusCode() + ")",
@@ -117,7 +143,7 @@ public final class MineClubAuth {
           }
 
           this.join(session, accessToken, challenge.serverId(), consumer);
-        });
+        }));
   }
 
   /**
@@ -136,7 +162,7 @@ public final class MineClubAuth {
     body.put("serverId", serverId);
 
     Requests.post(Void.class, MOJANG_JOIN, this.addon.userAgent(), body, null)
-        .execute(response -> {
+        .execute(response -> this.step("Mojang-kaldet", consumer, () -> {
           int status = response.getStatusCode();
           if (status != 204 && status != 200) {
             this.fail("Mojang afviste sessionen (HTTP " + status + ")", consumer);
@@ -144,7 +170,7 @@ public final class MineClubAuth {
           }
 
           this.verify(session, serverId, consumer);
-        });
+        }));
   }
 
   private void verify(Session session, String serverId, Consumer<String> consumer) {
@@ -160,7 +186,7 @@ public final class MineClubAuth {
             body,
             null
         )
-        .execute(response -> {
+        .execute(response -> this.step("tokenet", consumer, () -> {
           ClientVerifyResponse verified = response.isPresent() ? response.get() : null;
           if (verified == null || verified.token() == null) {
             this.fail("api'en ville ikke udstede et token (HTTP " + response.getStatusCode() + ")",
@@ -174,13 +200,28 @@ public final class MineClubAuth {
           this.nextAttemptAt = 0L;
 
           consumer.accept(this.token);
-        });
+        }));
+  }
+
+  /**
+   * Runs one step of the login, turning anything it throws into an ordinary failure.
+   *
+   * <p>A throw inside a request callback is swallowed by the worker that ran it, and the step
+   * after it never happens. The login would then stay in flight, holding back every request that
+   * needs a token without anything being written anywhere.
+   */
+  private void step(String what, Consumer<String> consumer, Runnable body) {
+    try {
+      body.run();
+    } catch (Exception exception) {
+      this.fail(what + " fejlede: " + exception, consumer);
+    }
   }
 
   private void fail(String reason, Consumer<String> consumer) {
     this.authenticating = false;
     this.nextAttemptAt = System.currentTimeMillis() + RETRY_DELAY_MILLIS;
-    this.addon.logger().warn("MineClub-login mislykkedes: " + reason.toLowerCase(Locale.ROOT));
+    this.addon.logger().warn("MineClub-login mislykkedes: " + reason);
     consumer.accept(null);
   }
 }

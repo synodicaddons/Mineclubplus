@@ -138,6 +138,7 @@
       "noMatches": "Ingen items matcher filteret",
       "comingSoon": "Kommer snart",
       "demo": "DEMO",
+      "demoHint": "Dine egne tal kunne ikke hentes, saa der staar eksempler. Tjek klientloggen for hvorfor.",
       "preparing": "Henter dine tal ...",
       "failed": "Kunne ikke hente dine tal",
       "locked": "Findes ikke i %s. Varen er fra %s — hop på den version for at se den."

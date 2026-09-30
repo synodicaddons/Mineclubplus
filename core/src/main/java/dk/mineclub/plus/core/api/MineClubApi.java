@@ -112,6 +112,13 @@ public final class MineClubApi {
   private final CachedResource<ClientShopResponse> shop;
 
   private volatile boolean profileLive;
+
+  /**
+   * The last reason the sample numbers were used, so the same one is written once rather than on
+   * every refresh while the window is open.
+   */
+  private volatile String lastFallbackReason;
+
   private volatile boolean economyLive;
   private volatile boolean transporterLive;
   private volatile boolean skillsLive;
@@ -163,6 +170,21 @@ public final class MineClubApi {
    */
   public boolean hasSampleData() {
     return !this.economyLive || !this.transporterLive || !this.skillsLive;
+  }
+
+  /**
+   * Writes why a section fell back to sample numbers, once per reason.
+   *
+   * <p>The window refreshes on a timer while it is open, so the same line would otherwise be
+   * written every half minute.
+   */
+  private void fallback(@NotNull String reason) {
+    if (reason.equals(this.lastFallbackReason)) {
+      return;
+    }
+
+    this.lastFallbackReason = reason;
+    this.addon.logger().warn("MineClub+ viser eksempeltal: " + reason);
   }
 
   public void refresh(boolean force) {
@@ -291,6 +313,7 @@ public final class MineClubApi {
   ) {
     this.auth.token(token -> {
       if (token == null) {
+        this.fallback("ingen klient-token, saa dine egne tal er eksempler");
         this.publish(data, info, null, null, null, null, success);
         return;
       }
@@ -418,6 +441,16 @@ public final class MineClubApi {
 
     EconomySnapshot economySnapshot = toEconomy(economy, transporter);
     this.economyLive = economySnapshot != null;
+
+    // A request that came back without the section the page needs used to be indistinguishable
+    // from one that was never sent: both ended as sample numbers, neither said anything.
+    if (economySnapshot == null && economy != null) {
+      this.fallback(economy.overview() == null
+          ? "oversigten kom ikke igennem, saa oekonomien er eksempler"
+          : "oversigten kom uden coins, saa oekonomien er eksempler");
+    } else if (economySnapshot != null) {
+      this.lastFallbackReason = null;
+    }
 
     TransporterSnapshot transporterSnapshot = toTransporter(transporter);
     this.transporterLive = transporterSnapshot != null;

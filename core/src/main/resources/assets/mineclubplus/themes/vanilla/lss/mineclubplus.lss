@@ -111,6 +111,18 @@
   margin-left: 4;
 }
 
+/* Marks a window whose numbers are examples. Amber rather than red: nothing is broken, the
+   figures are simply not the player's own. */
+.mcp-demo-badge {
+  margin-left: 4;
+  padding: 2 5 2 5;
+  box-sizing: border-box;
+  border-radius: 5;
+  font-size: 0.55;
+  text-color: rgb(24, 22, 16);
+  background-color: rgb(233, 176, 62);
+}
+
 /* Right-hand side, pinned edge first: close 5 from the edge, then refresh, rule, version. */
 .mcp-close {
   right: 5;
